@@ -7,6 +7,7 @@ Gem::Specification.new do |spec|
   spec.version = Ruboty::OpenAIChat::VERSION
   spec.authors = ["Tomoya Chiba"]
   spec.email = ["tomo.asleep@gmail.com"]
+  spec.license = "Apache-2.0"
 
   spec.summary = "OpenAI responds to given message if any other handler does not matches."
   spec.homepage = "https://github.com/tomoasleep/ruboty-openai_chat"

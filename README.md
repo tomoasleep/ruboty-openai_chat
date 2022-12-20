@@ -1,6 +1,6 @@
 # Ruboty::OpenAIChat
 
-[OpenAI](https://openai.com/) responds to given message if any other handler does not matches.
+[OpenAI](https://openai.com/) responds to given message if any other handler does not match.
 
 This gem uses conversation with an AI assistant like https://beta.openai.com/examples/default-chat as prompt for OpenAI.
 

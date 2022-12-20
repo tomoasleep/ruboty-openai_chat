@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.email = ["tomo.asleep@gmail.com"]
   spec.license = "Apache-2.0"
 
-  spec.summary = "OpenAI responds to given message if any other handler does not matches."
+  spec.summary = "OpenAI responds to given message if any other handler does not match."
   spec.homepage = "https://github.com/tomoasleep/ruboty-openai_chat"
   spec.required_ruby_version = ">= 2.6.0"
 

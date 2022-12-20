@@ -28,7 +28,7 @@ module Ruboty
       # @param keys [Array<String, Symbol>]
       # @return [Object, nil]
       def dig(*keys)
-        prefix.empty? ? robot.brain.data : robot.brain.data.dig(*prefix)
+        prefix.empty? ? robot.brain.data : robot.brain.data.dig(*keys)
       end
     end
   end

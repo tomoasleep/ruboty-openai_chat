@@ -5,6 +5,9 @@ module Ruboty
     module Actions
       # @abstract
       class Base
+        NAMESPACE = "openai-chat-actions-chat"
+        PROFILE_KEY = "profile"
+
         attr_reader :message
 
         # @param message [Ruboty::Message]
@@ -26,6 +29,10 @@ module Ruboty
         # @return [Memory]
         def memory
           @memory ||= Memory.new(robot)
+        end
+
+        def pretext
+          [ENV["OPENAI_CHAT_PRETEXT"], memory.namespace(NAMESPACE)[PROFILE_KEY]].compact.map { |text| text.strip.gsub(/\R/, " ") }.join(" ")
         end
       end
     end

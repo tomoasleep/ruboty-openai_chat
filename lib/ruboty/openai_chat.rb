@@ -6,6 +6,8 @@ require "ruby/openai"
 require_relative "openai_chat/version"
 require_relative "openai_chat/actions/base"
 require_relative "openai_chat/actions/chat"
+require_relative "openai_chat/actions/remember_profile"
+require_relative "openai_chat/actions/show_profile"
 require_relative "openai_chat/dialog"
 require_relative "openai_chat/memory"
 

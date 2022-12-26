@@ -10,6 +10,13 @@ Install the gem and add to the application's Gemfile by executing:
 
     $ bundle add ruboty-openai-chat
 
+## Commands
+
+```
+ruboty /remember chatbot profile (?<body>.+)/ - Remembers given sentence as pretext of AI prompt
+ruboty /show chatbot profile/ - Show the remembered profile
+```
+
 ### ENV
 
 - `OPENAI_ACCESS_TOKEN` - Pass OpenAI ACCESS TOKEN

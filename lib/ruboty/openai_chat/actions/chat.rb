@@ -6,8 +6,6 @@ module Ruboty
   module OpenAIChat
     module Actions
       class Chat < Base
-        NAMESPACE = "openai-chat-actions-chat"
-
         # @return [String]
         attr_reader :human_comment, :ai_comment
 
@@ -49,7 +47,7 @@ module Ruboty
 
         def build_prompt(human_comment)
           prefix = [prompt_prefix]
-          prefix += [ENV["OPENAI_CHAT_PRETEXT"]&.gsub(/\R/, " ")].compact
+          prefix += [pretext].compact
 
           dialogs = [example_dialog, *dialogs_from_memory,
                      Dialog.new(human_comment: human_comment, ai_comment: "")].map do |dialog|

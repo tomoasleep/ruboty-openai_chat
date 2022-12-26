@@ -18,8 +18,28 @@ module Ruboty
         name: "chat"
       )
 
+      on(
+        /remember chatbot profile (?<body>.+)/,
+        description: "Remembers given sentence as pretext of AI prompt",
+        name: "remember_profile"
+      )
+
+      on(
+        /show chatbot profile/,
+        description: "Show the remembered profile",
+        name: "show_profile"
+      )
+
       def chat(message)
         Ruboty::OpenAIChat::Actions::Chat.new(message).call
+      end
+
+      def remember_profile(message)
+        Ruboty::OpenAIChat::Actions::RememberProfile.new(message).call
+      end
+
+      def show_profile(message)
+        Ruboty::OpenAIChat::Actions::ShowProfile.new(message).call
       end
     end
   end

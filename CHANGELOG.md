@@ -1,4 +1,5 @@
 ## [Unreleased]
+## [0.2.0] - 2022-12-26
 
 - Add `remember openai profile` command to remember the pretext of AI prompt.
 - Add `show openai profile` command to show the pretext of AI prompt.

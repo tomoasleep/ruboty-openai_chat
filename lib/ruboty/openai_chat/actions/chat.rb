@@ -11,70 +11,71 @@ module Ruboty
 
         def call
           human_comment = message[:body]
-          response = complete(human_comment)
-          p response if ENV["OPENAI_CHAT_DEBUG"]
+          response = request_chat(human_comment)
+          p response if Ruboty::OpenAIChat.debug_mode?
           raise response.body if response.code >= 400
 
-          ai_comment = response.dig("choices", 0, "text").gsub(/\A\s+/, "") || ""
+          ai_comment = response.dig("choices", 0, "message", "content").gsub(/\A\s+/, "") || ""
 
-          remember_dialog(Dialog.new(human_comment: human_comment, ai_comment: ai_comment, expire_at: expire_at))
+          remember_messages(
+            Message.new(role: :user, content: human_comment, expire_at: expire_at),
+            Message.new(role: :assistant, content: ai_comment, expire_at: expire_at)
+          )
           message.reply(ai_comment)
         rescue StandardError => e
           forget
           message.reply(e.message, code: true)
-          raise e if ENV["OPENAI_CHAT_DEBUG"]
+          raise e if Ruboty::OpenAIChat.debug_mode?
 
           true
         end
 
         private
 
-        def complete(human_comment)
+        def request_chat(human_comment)
           # https://beta.openai.com/examples/default-chat
-          client.completions(
+          client.chat(
             parameters: {
-              model: "text-davinci-003",
-              temperature: 0.9,
-              max_tokens: 512,
-              top_p: 1,
-              frequency_penalty: 0,
-              presence_penalty: 0.6,
-              stop: Dialog::STOP_SEQUENCES,
-              prompt: build_prompt(human_comment)
+              model: "gpt-3.5-turbo",
+              messages: build_messages(human_comment).map(&:to_api_hash),
+              temperature: 0.7
             }
           )
         end
 
-        def build_prompt(human_comment)
-          prefix = [prompt_prefix]
-          prefix += [pretext].compact
-
-          dialogs = [example_dialog, *dialogs_from_memory,
-                     Dialog.new(human_comment: human_comment, ai_comment: "")].map do |dialog|
-            dialog.to_prompt.chomp
-          end.join("\n")
-
-          <<~STRING.chomp
-            #{prefix.join(" ")}
-
-            #{dialogs}
+        # @return [Array<Message>]
+        def build_messages(human_comment)
+          settings = <<~STRING.chomp
+            The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly. The AI assistant's name is #{robot.name}.
           STRING
+
+          system_messages = [Message.new(role: :system, content: settings)]
+          pretexts.each do |pretext|
+            system_messages << Message.new(role: :system, content: pretext.chomp)
+          end
+
+          pre_messages = [*example_dialog, *messages_from_memory]
+
+          [*system_messages, *pre_messages, Message.new(role: :user, content: human_comment)]
         end
 
         # @return [Array<Dialog>]
-        def dialogs_from_memory
-          raw_dialogs.reject! { |hash| Dialog.from_hash(hash).expired? }
-          raw_dialogs.map { |hash| Dialog.from_hash(hash) }
+        def messages_from_memory
+          current = Time.now
+          raw_messages.reject! { |hash| Message.from_hash(hash).expired?(current) }
+          raw_messages.map { |hash| Message.from_hash(hash) }
         end
 
-        # @param dialog [Dialog]
-        def remember_dialog(dialog)
-          raw_dialogs << dialog.to_h
+        # @param messages [Array<Message>]
+        def remember_messages(*messages)
+          messages.each do |message|
+            raw_messages << message.to_h
+          end
         end
 
         # @return [Array<Hash>]
-        def raw_dialogs
-          memory.namespace(NAMESPACE, message.from || "general")[:dialogs] ||= []
+        def raw_messages
+          memory.namespace(NAMESPACE, message.from || "general")[:messages] ||= []
         end
 
         def forget
@@ -83,26 +84,22 @@ module Ruboty
 
         # @return [Time]
         def expire_at
-          Time.now + ENV.fetch("OPENAI_CHAT_MEMORIZE_SECONDS") { 5 * 60 }.to_i
+          Time.now + ENV.fetch("OPENAI_CHAT_MEMORIZE_SECONDS") { 15 * 60 }.to_i
         end
 
-        # @return [String]
-        def prompt_prefix
-          "The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly. The AI assistant's name is #{robot.name}."
-        end
-
+        # @return [Array<Message>]
         def example_dialog
           case language
           when :ja
-            Dialog.new(
-              human_comment: "こんにちは。あなたは誰ですか？",
-              ai_comment: "私は OpenAI 製の AI アシスタントの #{robot.name} です。なにかお手伝いできることはありますか？"
-            )
+            [
+              Message.new(role: :user, content: "こんにちは。あなたは誰ですか？"),
+              Message.new(role: :assistant, content: "私は AI アシスタントの #{robot.name} です。なにかお手伝いできることはありますか？")
+            ]
           else
-            Dialog.new(
-              human_comment: "Hello, who are you?",
-              ai_comment: "I'm #{robot.name}, an AI assistant created by OpenAI. How can I help you today?"
-            )
+            [
+              Message.new(role: :user, content: "Hello, who are you?"),
+              Message.new(role: :assistant, content: "I'm #{robot.name}, an AI assistant. How can I help you today?")
+            ]
           end
         end
 

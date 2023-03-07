@@ -31,8 +31,9 @@ module Ruboty
           @memory ||= Memory.new(robot)
         end
 
-        def pretext
-          [ENV["OPENAI_CHAT_PRETEXT"], memory.namespace(NAMESPACE)[PROFILE_KEY]].compact.map { |text| text.strip.gsub(/\R/, " ") }.join(" ")
+        # @return [Array<String>]
+        def pretexts
+          [ENV["OPENAI_CHAT_PRETEXT"], memory.namespace(NAMESPACE)[PROFILE_KEY]].compact
         end
       end
     end

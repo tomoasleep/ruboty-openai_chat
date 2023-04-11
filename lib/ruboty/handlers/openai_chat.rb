@@ -5,6 +5,11 @@ require "ruboty"
 module Ruboty
   module Handlers
     class OpenAIChat < Base
+      def initialize(*args)
+        super(*args)
+        ::Ruboty::OpenAIChat.setup
+      end
+
       env :OPENAI_ACCESS_TOKEN, "Pass OpenAI ACCESS TOKEN"
       env :OPENAI_ORGANIZATION_ID, "Pass OpenAI Organization ID"
       env :OPENAI_CHAT_PRETEXT, "Pretext of OpenAI prompt", optional: true

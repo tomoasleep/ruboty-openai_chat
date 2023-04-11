@@ -21,20 +21,26 @@ module Ruboty
       # @param role [:system, :user, :assistant]
       # @param content [String]
       # @param expire_at [Time, Integer, nil]
-      def initialize(role:, content:, expire_at: nil)
+      def initialize(role:, content:, expire_at: nil, token_length: nil)
         @role = role.to_sym
         raise ArgumentError, "role must be :system, :user, or :assistant" unless ROLES.include?(@role)
 
         @content = content
         @expire_at = expire_at&.yield_self { |t| Time.at(t) }
+        @token_length = token_length
+      end
+
+      # @return [Integer]
+      def token_length
+        @token_length ||= Ruboty::OpenAIChat.tokenizer.encode(content).length
       end
 
       # @return [Hash]
       def to_h
-        { role: role, content: content, expire_at: expire_at&.to_i }
+        { role: role, content: content, expire_at: expire_at&.to_i, token_length: @token_length&.to_i }
       end
 
-      def to_api_hash
+      def to_api_message
         { role: role, content: content }
       end
 

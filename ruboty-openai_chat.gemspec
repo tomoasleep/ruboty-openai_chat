@@ -32,6 +32,7 @@ Gem::Specification.new do |spec|
   # spec.add_dependency "example-gem", "~> 1.0"
   spec.add_dependency "ruboty"
   spec.add_dependency "ruby-openai", "~> 3.5"
+  spec.add_dependency "tiktoken_ruby", "~> 0.0.4"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html

@@ -36,7 +36,7 @@ module Ruboty
           # https://beta.openai.com/examples/default-chat
           client.chat(
             parameters: {
-              model: "gpt-3.5-turbo",
+              model: openai_model,
               messages: build_messages(human_comment).map(&:to_api_hash),
               temperature: 0.7
             }

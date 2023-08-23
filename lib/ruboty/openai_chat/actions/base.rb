@@ -35,6 +35,11 @@ module Ruboty
         def pretexts
           [ENV["OPENAI_CHAT_PRETEXT"], memory.namespace(NAMESPACE)[PROFILE_KEY]].compact
         end
+
+        # @return [String]
+        def openai_model
+          ENV["OPENAI_CHAT_MODEL"] || "gpt-3.5-turbo"
+        end
       end
     end
   end

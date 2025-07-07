@@ -17,3 +17,6 @@ Style/Documentation:
 
 Layout/LineLength:
   Enabled: false
+
+Layout/LeadingCommentSpace:
+  AllowRbsInlineAnnotation: true

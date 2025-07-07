@@ -10,6 +10,7 @@ module Ruboty
       env :OPENAI_CHAT_PRETEXT, "Pretext of OpenAI prompt", optional: true
       env :OPENAI_CHAT_LANGUAGE, "Pass your primary language", optional: true
       env :OPENAI_CHAT_MEMORIZE_SECONDS, "AI remembers the past dialogs in the specified seconds", optional: true
+      env :OPENAI_CHAT_MODEL, "OpenAI model to use", optional: true
 
       on(
         /(?<body>.+)/m,

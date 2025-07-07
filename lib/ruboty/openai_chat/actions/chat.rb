@@ -13,9 +13,8 @@ module Ruboty
           human_comment = message[:body]
           response = request_chat(human_comment)
           p response if Ruboty::OpenAIChat.debug_mode?
-          raise response.body if response.code >= 400
 
-          ai_comment = response.dig("choices", 0, "message", "content").gsub(/\A\s+/, "") || ""
+          ai_comment = response.choices.first.message.content.gsub(/\A\s+/, "") || ""
 
           remember_messages(
             Message.new(role: :user, content: human_comment, expire_at: expire_at),
@@ -32,14 +31,12 @@ module Ruboty
 
         private
 
-        def request_chat(human_comment)
+        def request_chat(human_comment) #: OpenAI::Models::Chat::ChatCompletion
           # https://beta.openai.com/examples/default-chat
-          client.chat(
-            parameters: {
-              model: openai_model,
-              messages: build_messages(human_comment).map(&:to_api_hash),
-              temperature: 0.7
-            }
+          client.chat.completions.create(
+            model: openai_model,
+            messages: build_messages(human_comment).map(&:to_api_hash),
+            temperature: 0.7
           )
         end
 

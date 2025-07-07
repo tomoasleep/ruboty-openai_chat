@@ -17,8 +17,8 @@ module Ruboty
 
         # @return [OpenAI::Client]
         def client
-          @client ||= OpenAI::Client.new(access_token: ENV.fetch("OPENAI_ACCESS_TOKEN"),
-                                         organization_id: ENV.fetch("OPENAI_ORGANIZATION_ID"))
+          @client ||= OpenAI::Client.new(api_key: ENV.fetch("OPENAI_ACCESS_TOKEN"),
+                                         organization: ENV.fetch("OPENAI_ORGANIZATION_ID"))
         end
 
         # @return [Ruboty::Robot]
@@ -38,7 +38,7 @@ module Ruboty
 
         # @return [String]
         def openai_model
-          ENV["OPENAI_CHAT_MODEL"] || "gpt-3.5-turbo"
+          ENV["OPENAI_CHAT_MODEL"] || "gpt-4.1-nano"
         end
       end
     end
